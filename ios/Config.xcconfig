@@ -1,0 +1,9 @@
+// The only file you need to edit. Then run `xcodegen` in this folder.
+
+// Your Apple Developer Team ID: Xcode ▸ Settings ▸ Accounts, or developer.apple.com ▸ Membership.
+DEVELOPMENT_TEAM =
+
+// Must be unique to you. The keyboard and App Group IDs are derived from it.
+MURMUR_BUNDLE_ID = com.example.murmur
+
+MURMUR_APP_GROUP = group.$(MURMUR_BUNDLE_ID)

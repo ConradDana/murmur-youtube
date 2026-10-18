@@ -3,6 +3,9 @@
 Push-to-talk dictation for macOS. Hold a key, talk, release — cleaned-up text lands in
 whatever text field has focus. A Wispr Flow-shaped app, built native and fully on-device.
 
+**iPad:** there's an iPad version too: a dictation keyboard plus a companion app,
+built from the same speech, cleanup and dictionary code. See [`ios/README.md`](ios/README.md).
+
 **Status:** working skeleton. Builds, launches, arms the hotkey, transcribes, injects.
 Branding and the LLM cleanup tier are the next passes.
 

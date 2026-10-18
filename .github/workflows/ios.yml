@@ -1,0 +1,48 @@
+name: iPad
+
+# Compiles the iPad app and keyboard, unsigned. It can't run them — a keyboard needs a
+# real device and a person — but it catches every build break, including in the Mac
+# sources the iPad app compiles directly.
+
+on:
+  push:
+    branches: [main]
+    paths: ['ios/**', 'Sources/**', '.github/workflows/ios.yml']
+  pull_request:
+    paths: ['ios/**', 'Sources/**', '.github/workflows/ios.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build (unsigned)
+    # The app needs the iOS 26 SDK for SpeechAnalyzer and Foundation Models.
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select the newest Xcode
+        run: |
+          latest=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          echo "Using $latest"
+          sudo xcode-select -s "$latest/Contents/Developer"
+
+      - name: Generate the project
+        working-directory: ios
+        run: |
+          brew install xcodegen
+          xcodegen
+
+      - name: Build
+        working-directory: ios
+        run: |
+          xcodebuild build \
+            -project Murmur.xcodeproj \
+            -target Murmur \
+            -sdk iphoneos \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO

@@ -1,0 +1,126 @@
+# XcodeGen spec for the iPad app. Generate the project with `xcodegen` in this folder;
+# the .xcodeproj is a build product and is not checked in.
+#
+# The speech engine, microphone capture, cleanup and dictionary are compiled straight
+# from the Mac app's sources rather than copied, so a fix on one side is a fix on both.
+# Those files are listed one by one: everything else in Sources/MurmurYouTube is AppKit.
+
+name: Murmur
+
+options:
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+
+configFiles:
+  Debug: Config.xcconfig
+  Release: Config.xcconfig
+
+settings:
+  base:
+    # The shared Mac files are Swift 6 clean; the iPad-only code is written to be too,
+    # but builds in 5 mode so a strict-concurrency nit can't block a first run.
+    SWIFT_VERSION: "5.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  # Same module name as the Mac SwiftPM target, so `import MurmurDictionary` works unchanged.
+  MurmurDictionary:
+    type: framework
+    platform: iOS
+    sources:
+      - path: ../Sources/MurmurDictionary
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(MURMUR_BUNDLE_ID).dictionary
+        SWIFT_VERSION: "6.0"
+        GENERATE_INFOPLIST_FILE: YES
+        APPLICATION_EXTENSION_API_ONLY: YES
+
+  Murmur:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Shared
+      - path: ../Sources/MurmurYouTube/Transcription/TranscriptionEngine.swift
+        group: FromMac
+      - path: ../Sources/MurmurYouTube/Transcription/AppleSpeechEngine.swift
+        group: FromMac
+      - path: ../Sources/MurmurYouTube/Core/AudioCapture.swift
+        group: FromMac
+      - path: ../Sources/MurmurYouTube/Formatting/TextFormatter.swift
+        group: FromMac
+      - path: ../Sources/MurmurYouTube/Formatting/FoundationModelFormatter.swift
+        group: FromMac
+      - path: ../Sources/MurmurYouTube/Dictionary/DictionaryStore.swift
+        group: FromMac
+      - path: ../Sources/MurmurYouTube/Support/Log.swift
+        group: FromMac
+    dependencies:
+      - target: MurmurDictionary
+      - target: MurmurKeyboard
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(MURMUR_BUNDLE_ID)
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Murmur
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        MurmurAppGroup: $(MURMUR_APP_GROUP)
+        UILaunchScreen: {}
+        # Keeps the session's live mic input — and so the app — running in the background.
+        UIBackgroundModes: [audio]
+        NSMicrophoneUsageDescription: Murmur listens while you dictate so it can turn your speech into text. Audio stays on this iPad.
+        NSSpeechRecognitionUsageDescription: Murmur transcribes your speech on this iPad to type it where you're working.
+        CFBundleURLTypes:
+          - CFBundleURLName: $(MURMUR_BUNDLE_ID)
+            CFBundleURLSchemes: [murmur-dictate]
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+    entitlements:
+      path: App/Murmur.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - $(MURMUR_APP_GROUP)
+
+  MurmurKeyboard:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Keyboard
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(MURMUR_BUNDLE_ID).keyboard
+    info:
+      path: Keyboard/Info.plist
+      properties:
+        CFBundleDisplayName: Murmur
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        MurmurAppGroup: $(MURMUR_APP_GROUP)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.keyboard-service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).KeyboardViewController
+          NSExtensionAttributes:
+            # Required for the App Group, which is how the keyboard talks to the app.
+            RequestsOpenAccess: true
+            IsASCIICapable: false
+            PrefersRightToLeft: false
+            PrimaryLanguage: en-US
+    entitlements:
+      path: Keyboard/MurmurKeyboard.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - $(MURMUR_APP_GROUP)
