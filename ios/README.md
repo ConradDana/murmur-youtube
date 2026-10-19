@@ -40,27 +40,60 @@ can respond instantly, but it throws the audio away unless you're dictating.
 
 ## Building it
 
-You need Xcode 26 or newer on your Mac, and an Apple Developer account. A paid one
-($99/year) is the practical choice: the keyboard and app share data through an App Group,
-and apps installed with a free account stop launching after 7 days.
+You need a Mac with **Xcode** (free, from the Mac App Store) and an **Apple ID**. No
+programming experience needed — you're running Apple's tools on code that's already
+written.
 
-1. Install XcodeGen: `brew install xcodegen`
-2. Edit `ios/Config.xcconfig`: set `DEVELOPMENT_TEAM` to your Team ID and
-   `MURMUR_BUNDLE_ID` to something unique to you, like `com.yourname.murmur`.
-3. Generate and open the project:
+### Free Apple ID vs. the Apple Developer Program ($99/year)
+
+| | Free Apple ID | Developer Program |
+|---|---|---|
+| App and **Try it here** (dictate, copy, paste) | ✅ | ✅ |
+| The Murmur **keyboard** | ❌ needs an App Group | ✅ |
+| How long an install lasts | 7 days, then reinstall from Xcode | a year |
+| Install without the cable (TestFlight) | ❌ | ✅ |
+
+Set `MURMUR_PAID_ACCOUNT` in `ios/Config.xcconfig` to match. Starting free and switching
+later is fine: change it to `YES`, run `ios/setup.sh` again, and press Run.
+
+### Step by step (first time)
+
+1. **Install Xcode** from the Mac App Store and open it once. Let it install any extra
+   components it asks for. Sign in with your Apple ID in **Xcode ▸ Settings ▸ Accounts**.
+2. **Get the code.** Open Terminal (⌘Space, type Terminal) and paste:
    ```bash
-   cd ios
-   xcodegen
-   open Murmur.xcodeproj
+   mkdir -p ~/Developer && cd ~/Developer
+   git clone https://github.com/ConradDana/murmur-youtube
+   open -e murmur-youtube/ios/Config.xcconfig
    ```
-4. Choose the **Murmur** scheme and your iPad as the destination, then Run (⌘R).
-   Automatic signing registers the App Group for you.
+   Keep it out of `~/Desktop` and `~/Documents` — iCloud sync interferes with builds.
+3. **Edit the config** that just opened in TextEdit: change `com.example.murmur` to
+   something like `com.yourname.murmur`. Save and close.
+4. **Generate the project and open it in Xcode:**
+   ```bash
+   murmur-youtube/ios/setup.sh
+   ```
+5. **Pick your team.** In Xcode's left sidebar click the blue **Murmur** project icon.
+   For each of the targets **Murmur**, **MurmurKeyboard** and **MurmurDictionary**: open the
+   **Signing & Capabilities** tab and choose your name under **Team**.
+6. **Plug the iPad into the Mac** with a cable. Unlock it and tap **Trust** if asked.
+   At the top of the Xcode window, choose your iPad as the run destination.
+7. **Press Run** (▶, or ⌘R). The first build takes a minute or two.
+8. **One-time iPad prompts:**
+   - *Developer Mode:* iPad **Settings ▸ Privacy & Security ▸ Developer Mode**, turn it
+     on, restart when asked. Then press Run again.
+   - *Untrusted developer:* **Settings ▸ General ▸ VPN & Device Management**, tap your
+     Apple ID, **Trust**.
 
-**If the Mac isn't next to the iPad** (for example, you reach it through Jump Desktop),
-you can't install by cable. Use TestFlight: in Xcode, **Product ▸ Archive**, then
-**Distribute App ▸ TestFlight Internal Only**. Install the TestFlight app on the iPad and
-the build shows up there a few minutes later. The app needs an App Store Connect record
-for your bundle ID; Xcode offers to create it.
+After the first install, Xcode can usually install over Wi-Fi with the cable unplugged, as
+long as both are on the same network (**Window ▸ Devices and Simulators ▸ Connect via
+network**).
+
+### Later, with the Developer Program
+
+TestFlight installs without the cable: **Product ▸ Archive**, then **Distribute App ▸
+TestFlight Internal Only**. Install the TestFlight app on the iPad and the build shows up
+there a few minutes later. Xcode offers to create the App Store Connect record it needs.
 
 ## Setting up the keyboard
 

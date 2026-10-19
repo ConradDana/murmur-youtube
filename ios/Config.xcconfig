@@ -1,9 +1,19 @@
 // The only file you need to edit. Then run `xcodegen` in this folder.
 
-// Your Apple Developer Team ID: Xcode ▸ Settings ▸ Accounts, or developer.apple.com ▸ Membership.
-DEVELOPMENT_TEAM =
-
-// Must be unique to you. The keyboard and App Group IDs are derived from it.
+// Pick something unique to you, like com.yourname.murmur. Letters, numbers, dots, dashes.
 MURMUR_BUNDLE_ID = com.example.murmur
 
+// Free Apple ID: leave this NO. The app installs and "Try it here" works, but the
+// keyboard can't reach the app — that needs an App Group, which free accounts can't use.
+// Joined the Apple Developer Program? Change to YES and run `xcodegen` again.
+MURMUR_PAID_ACCOUNT = NO
+
+// Optional. Leave blank and pick your team in Xcode instead (Signing & Capabilities).
+DEVELOPMENT_TEAM =
+
+// Nothing below needs editing.
 MURMUR_APP_GROUP = group.$(MURMUR_BUNDLE_ID)
+MURMUR_APP_ENTITLEMENTS_YES = App/Murmur.entitlements
+MURMUR_APP_ENTITLEMENTS_NO =
+MURMUR_KEYBOARD_ENTITLEMENTS_YES = Keyboard/MurmurKeyboard.entitlements
+MURMUR_KEYBOARD_ENTITLEMENTS_NO =

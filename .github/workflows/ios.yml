@@ -31,11 +31,10 @@ jobs:
           echo "Using $latest"
           sudo xcode-select -s "$latest/Contents/Developer"
 
+      # Through the same script a person runs, so its download path is tested too.
+      # XcodeGen isn't preinstalled on the runner, so this exercises the download.
       - name: Generate the project
-        working-directory: ios
-        run: |
-          brew install xcodegen
-          xcodegen
+        run: ios/setup.sh --no-open
 
       - name: Build
         working-directory: ios

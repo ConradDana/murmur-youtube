@@ -120,6 +120,11 @@ struct ContentView: View {
 
     private var setupSection: some View {
         Section {
+            if !Bridge.hasAppGroup {
+                Text("The keyboard needs the Apple Developer Program. This copy was built with a free account, so for now dictate in **Try it here**, tap copy, and paste where you need it.")
+                    .font(.callout)
+                    .foregroundStyle(.orange)
+            }
             VStack(alignment: .leading, spacing: 8) {
                 Text("1. Open **Settings ▸ General ▸ Keyboard ▸ Keyboards ▸ Add New Keyboard** and choose **Murmur**.")
                 Text("2. Tap **Murmur** in that list and turn on **Allow Full Access**. The keyboard needs it to talk to this app. Your audio never leaves the iPad.")

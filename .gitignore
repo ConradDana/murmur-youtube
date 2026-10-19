@@ -27,5 +27,4 @@ models/
 ios/*.xcodeproj/
 ios/App/Info.plist
 ios/Keyboard/Info.plist
-ios/App/*.entitlements
-ios/Keyboard/*.entitlements
+ios/.tools/

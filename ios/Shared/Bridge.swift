@@ -20,6 +20,13 @@ enum Bridge {
 
     static let defaults = UserDefaults(suiteName: appGroup)
 
+    /// False on a free Apple ID build, which has no App Group entitlement. Without one,
+    /// `UserDefaults(suiteName:)` still returns an object — it just isn't shared — so the
+    /// container is the honest test.
+    static var hasAppGroup: Bool {
+        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) != nil
+    }
+
     static let urlScheme = "murmur-dictate"
     /// Opened by the keyboard when no session is running. The app must be in the
     /// foreground to start recording, which is the whole reason this round trip exists.
